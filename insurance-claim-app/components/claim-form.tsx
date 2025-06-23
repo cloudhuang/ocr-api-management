@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -13,8 +13,8 @@ export interface FormData {
   insuredName: string
   mailingAddress: string
   insuredIdNumber: string
-  insuredDateOfBirth: string
-  policyholderUnit: string
+  insuredBirthDate: string
+  policyHolder: string
   currentOccupation: string
   occupationCode: string
   policyNumber: string
@@ -23,17 +23,17 @@ export interface FormData {
   incidentCause: string
   incidentRegion: string
   hospitalsVisited: string
-  incidentDateTime: string
-  incidentLocation: string
-  incidentDetails: string
-  policeOfficerName: string
-  policeContactPhone: string
-  handlingPoliceUnit: string
+  accidentDate: string
+  accidentLocation: string
+  accidentDescription: string
+  policeName: string
+  policeContact: string
+  policeUnit: string
   beneficiaryName: string
   beneficiaryIdNumber: string
-  paymentAccountOption: string
-  bankNameAndBranch: string
-  bankCode: string
+  beneficiaryAccount: string
+  bankAccount: string
+  bankAccountCode: string
   accountNumber: string
   contactAddress: string
   mobilePhone: string
@@ -58,14 +58,19 @@ export interface FormData {
   authDate: string
 }
 
-export default function ClaimForm() {
+// 1. 定义 props 接口，以接收外部数据
+interface ClaimFormProps {
+  initialData: FormData | null;
+}
+
+export default function ClaimForm({ initialData }: ClaimFormProps) {
   const [currentStep, setCurrentStep] = useState(1)
   const [formData, setFormData] = useState<FormData>({
     insuredName: "",
     mailingAddress: "",
     insuredIdNumber: "",
-    insuredDateOfBirth: "",
-    policyholderUnit: "",
+    insuredBirthDate: "",
+    policyHolder: "",
     currentOccupation: "",
     occupationCode: "",
     policyNumber: "",
@@ -74,17 +79,17 @@ export default function ClaimForm() {
     incidentCause: "",
     incidentRegion: "",
     hospitalsVisited: "",
-    incidentDateTime: "",
-    incidentLocation: "",
-    incidentDetails: "",
-    policeOfficerName: "",
-    policeContactPhone: "",
-    handlingPoliceUnit: "",
+    accidentDate: "",
+    accidentLocation: "",
+    accidentDescription: "",
+    policeName: "",
+    policeContact: "",
+    policeUnit: "",
     beneficiaryName: "",
     beneficiaryIdNumber: "",
-    paymentAccountOption: "",
-    bankNameAndBranch: "",
-    bankCode: "",
+    beneficiaryAccount: "",
+    bankAccount: "",
+    bankAccountCode: "",
     accountNumber: "",
     contactAddress: "",
     mobilePhone: "",
@@ -106,6 +111,14 @@ export default function ClaimForm() {
     authLegalGuardianIdNumber: "",
     authDate: "",
   })
+
+  // 2. 使用 useEffect 钩子来监听外部数据的变化
+  // 当 initialData prop 改变时 (即API调用成功后), 更新表单的内部状态
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
   const totalSteps = 2
   const progress = (currentStep / totalSteps) * 100

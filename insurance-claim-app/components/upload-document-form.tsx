@@ -9,53 +9,36 @@ interface FileWithPreview extends File {
   preview: string;
 }
 
-export default function UploadDocumentForm() {
+// 1. 定义 props 接口
+interface UploadDocumentFormProps {
+  onUpload: (file: File) => void;
+  isUploading: boolean;
+}
+
+export default function UploadDocumentForm({ onUpload, isUploading }: UploadDocumentFormProps) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = event.target.files;
-    if (fileList) {
-      const newFiles = Array.from(fileList).map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    }
+    const newFiles = Array.from(event.target.files || []).map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
+    );
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
   };
 
-  const handleUpload = async () => {
-    if (files.length === 0) return;
-
-    setIsUploading(true);
-    setUploadSuccess(false);
-
-    try {
-      // Simulate file upload
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In a real application, you would send the files to your server here
-      // Example:
-      // const formData = new FormData()
-      // files.forEach(file => formData.append('files', file))
-      // await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData
-      // })
-
-      setUploadSuccess(true);
-    } catch (error) {
-      console.error("Upload failed:", error);
-      setUploadSuccess(false);
-    } finally {
-      setIsUploading(false);
+  const handleUpload = () => {
+    // 2. 当点击上传时，调用从 props 传入的 onUpload 函数
+    // 我们只处理第一个文件，符合后端接口要求
+    if (files.length > 0) {
+      onUpload(files[0]);
     }
   };
 
   const handleRemoveFile = (fileToRemove: FileWithPreview) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
+    setFiles((prevFiles) =>
+      prevFiles.filter((file) => file !== fileToRemove)
+    );
     URL.revokeObjectURL(fileToRemove.preview);
   };
 
@@ -128,19 +111,13 @@ export default function UploadDocumentForm() {
       <div className="flex justify-end space-x-3">
         <Button
           onClick={handleUpload}
+          // 3. 使用 props 传入的 isUploading 状态
           disabled={isUploading || files.length === 0}
           className="bg-blue-500 hover:bg-blue-600 px-6 py-3"
         >
           {isUploading ? "Uploading..." : "Upload Documents"}
         </Button>
       </div>
-
-      {uploadSuccess && (
-        <div className="mt-6 p-3 bg-green-100 text-green-700 rounded-md flex items-center">
-          <CheckCircle className="w-6 h-6 mr-2" />
-          <span className="text-md">Files uploaded successfully!</span>
-        </div>
-      )}
     </div>
   );
 }

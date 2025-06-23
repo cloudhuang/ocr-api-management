@@ -52,12 +52,12 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
             />
           </div>
           <div>
-            <Label htmlFor="insuredDateOfBirth">出生日期 *</Label>
+            <Label htmlFor="insuredBirthDate">出生日期 *</Label>
             <Input
-              id="insuredDateOfBirth"
+              id="insuredBirthDate"
               type="date"
-              value={formData.insuredDateOfBirth}
-              onChange={(e) => updateFormData({ insuredDateOfBirth: e.target.value })}
+              value={formData.insuredBirthDate}
+              onChange={(e) => updateFormData({ insuredBirthDate: e.target.value })}
               required
             />
           </div>
@@ -110,11 +110,11 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
               />
             </div>
             <div>
-              <Label htmlFor="policyholderUnit">要保單位</Label>
+              <Label htmlFor="policyHolder">要保單位</Label>
               <Input
-                id="policyholderUnit"
-                value={formData.policyholderUnit}
-                onChange={(e) => updateFormData({ policyholderUnit: e.target.value })}
+                id="policyHolder"
+                value={formData.policyHolder}
+                onChange={(e) => updateFormData({ policyHolder: e.target.value })}
                 placeholder="僅在申請團體保險時需要填寫"
               />
             </div>
@@ -128,15 +128,15 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
               className="flex flex-wrap gap-4 mt-2"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="1" id="insurance-1" />
+                <RadioGroupItem value="個人險" id="insurance-1" />
                 <Label htmlFor="insurance-1">個人險</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="2" id="insurance-2" />
+                <RadioGroupItem value="團體險" id="insurance-2" />
                 <Label htmlFor="insurance-2">團體險</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="3" id="insurance-3" />
+                <RadioGroupItem value="旅行平安險" id="insurance-3" />
                 <Label htmlFor="insurance-3">旅行平安險</Label>
               </div>
             </RadioGroup>
@@ -208,21 +208,21 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="incidentDateTime">事故時間 *</Label>
+              <Label htmlFor="accidentDate">事故時間 *</Label>
               <Input
-                id="incidentDateTime"
+                id="accidentDate"
                 type="datetime-local"
-                value={formData.incidentDateTime}
-                onChange={(e) => updateFormData({ incidentDateTime: e.target.value })}
+                value={formData.accidentDate}
+                onChange={(e) => updateFormData({ accidentDate: e.target.value })}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="incidentLocation">事故地點 *</Label>
+              <Label htmlFor="accidentLocation">事故地點 *</Label>
               <Input
-                id="incidentLocation"
-                value={formData.incidentLocation}
-                onChange={(e) => updateFormData({ incidentLocation: e.target.value })}
+                id="accidentLocation"
+                value={formData.accidentLocation}
+                onChange={(e) => updateFormData({ accidentLocation: e.target.value })}
                 placeholder="詳細的事故發生地點"
                 required
               />
@@ -230,11 +230,11 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
           </div>
 
           <div>
-            <Label htmlFor="incidentDetails">經過詳情 *</Label>
+            <Label htmlFor="accidentDescription">經過詳情 *</Label>
             <Textarea
-              id="incidentDetails"
-              value={formData.incidentDetails}
-              onChange={(e) => updateFormData({ incidentDetails: e.target.value })}
+              id="accidentDescription"
+              value={formData.accidentDescription}
+              onChange={(e) => updateFormData({ accidentDescription: e.target.value })}
               placeholder="詳細描述事故發生的經過"
               rows={4}
               required
@@ -254,122 +254,111 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
         </CardContent>
       </Card>
 
-      {/* 警方處理資料 */}
+      {/* 憲警單位資料 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg text-blue-700">警方處理資料 (若有)</CardTitle>
+          <CardTitle className="text-lg text-blue-700">憲警單位資料 (交通意外事故)</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="policeOfficerName">員警姓名</Label>
+            <Label htmlFor="policeName">員警姓名</Label>
             <Input
-              id="policeOfficerName"
-              value={formData.policeOfficerName}
-              onChange={(e) => updateFormData({ policeOfficerName: e.target.value })}
-              placeholder="處理事故的員警姓名"
+              id="policeName"
+              value={formData.policeName}
+              onChange={(e) => updateFormData({ policeName: e.target.value })}
             />
           </div>
           <div>
-            <Label htmlFor="policeContactPhone">聯絡電話</Label>
+            <Label htmlFor="policeContact">聯絡電話</Label>
             <Input
-              id="policeContactPhone"
-              type="tel"
-              value={formData.policeContactPhone}
-              onChange={(e) => updateFormData({ policeContactPhone: e.target.value })}
-              placeholder="處理事故的員警聯絡電話"
+              id="policeContact"
+              value={formData.policeContact}
+              onChange={(e) => updateFormData({ policeContact: e.target.value })}
             />
           </div>
-          <div>
-            <Label htmlFor="handlingPoliceUnit">處理憲警單位</Label>
+          <div className="md:col-span-2">
+            <Label htmlFor="policeUnit">處理憲警單位</Label>
             <Input
-              id="handlingPoliceUnit"
-              value={formData.handlingPoliceUnit}
-              onChange={(e) => updateFormData({ handlingPoliceUnit: e.target.value })}
-              placeholder="處理事故的警察局或憲兵單位"
+              id="policeUnit"
+              value={formData.policeUnit}
+              onChange={(e) => updateFormData({ policeUnit: e.target.value })}
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* 給付方式 */}
+      {/* 受益人領款資料 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg text-blue-700">給付方式</CardTitle>
+          <CardTitle className="text-lg text-blue-700">受益人領款資料</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <Label>給付方式 *</Label>
+            <RadioGroup
+              value={formData.beneficiaryAccount}
+              onValueChange={(value) => updateFormData({ beneficiaryAccount: value })}
+              className="flex gap-4 mt-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="same" id="pay-same" />
+                <Label htmlFor="pay-same">同「事故人」</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="direct" id="pay-direct" />
+                <Label htmlFor="pay-direct">匯入受益人帳戶</Label>
+              </div>
+            </RadioGroup>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="beneficiaryName">受益人/帳號戶名 *</Label>
+              <Label htmlFor="beneficiaryName">受益人姓名</Label>
               <Input
                 id="beneficiaryName"
                 value={formData.beneficiaryName}
                 onChange={(e) => updateFormData({ beneficiaryName: e.target.value })}
-                placeholder="保險金收款人的姓名"
-                required
+                placeholder="若選擇匯入受益人帳戶"
               />
             </div>
             <div>
-              <Label htmlFor="beneficiaryIdNumber">受益人身分證字號 *</Label>
+              <Label htmlFor="beneficiaryIdNumber">受益人身分證字號</Label>
               <Input
                 id="beneficiaryIdNumber"
                 value={formData.beneficiaryIdNumber}
                 onChange={(e) => updateFormData({ beneficiaryIdNumber: e.target.value })}
-                placeholder="保險金收款人的身分證號碼"
-                required
+                placeholder="若選擇匯入受益人帳戶"
               />
             </div>
           </div>
-
-          <div>
-            <Label>選擇匯款帳戶資料 *</Label>
-            <RadioGroup
-              value={formData.paymentAccountOption}
-              onValueChange={(value) => updateFormData({ paymentAccountOption: value })}
-              className="flex flex-wrap gap-4 mt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="1" id="account-1" />
-                <Label htmlFor="account-1">同前次理賠帳戶</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="2" id="account-2" />
-                <Label htmlFor="account-2">其他帳戶</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="3" id="account-3" />
-                <Label htmlFor="account-3">依保單約定帳戶</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="bankNameAndBranch">金融機構及分行名稱</Label>
+              <Label htmlFor="bankAccount">金融機構及分行名稱</Label>
               <Input
-                id="bankNameAndBranch"
-                value={formData.bankNameAndBranch}
-                onChange={(e) => updateFormData({ bankNameAndBranch: e.target.value })}
-                placeholder="收款銀行的完整名稱及分行名稱"
+                id="bankAccount"
+                value={formData.bankAccount}
+                onChange={(e) => updateFormData({ bankAccount: e.target.value })}
+                placeholder="例如：國泰世華銀行 忠孝分行"
               />
             </div>
             <div>
-              <Label htmlFor="bankCode">金融機構及分行代碼</Label>
+              <Label htmlFor="bankAccountCode">金融機構及分行代碼</Label>
               <Input
-                id="bankCode"
-                value={formData.bankCode}
-                onChange={(e) => updateFormData({ bankCode: e.target.value })}
-                placeholder="收款銀行的代碼"
+                id="bankAccountCode"
+                value={formData.bankAccountCode}
+                onChange={(e) => updateFormData({ bankAccountCode: e.target.value })}
+                placeholder="例如：013-0016"
               />
             </div>
           </div>
-
           <div>
             <Label htmlFor="accountNumber">帳號</Label>
             <Input
               id="accountNumber"
               value={formData.accountNumber}
               onChange={(e) => updateFormData({ accountNumber: e.target.value })}
-              placeholder="完整的收款銀行帳號"
+              placeholder="金融機構帳號"
             />
           </div>
         </CardContent>
