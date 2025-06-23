@@ -12,6 +12,7 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 # ==== 配置区 ====
 OLLAMA_MODEL = 'qwen2.5vl:32b'  # 或你的多模态模型名
 OLLAMA_HOST = 'http://192.168.235.62:11434'  # Ollama 服务地址
+OLLAMA_KEY = 'KEY'
 
 # 测试图片和文本
 TEST_IMAGE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '442.jpg'))
@@ -85,7 +86,7 @@ if error:
     sys.exit(1)
 
 # ==== 推理调用 ====
-response, error = get_ollama_response(ollama_messages, OLLAMA_MODEL, OLLAMA_HOST)
+response, error = get_ollama_response(ollama_messages, OLLAMA_MODEL, OLLAMA_HOST, OLLAMA_KEY)
 if error:
     print(f"[ERROR] {error}")
 else:

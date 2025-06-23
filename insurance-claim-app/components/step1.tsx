@@ -145,7 +145,7 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
           <div>
             <Label>理賠型態 (可複選)</Label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-              {["醫療", "重大疾病", "失能", "身故", "意外傷害", "住院"].map((type) => (
+              {["醫療", "重大疾病", "失能", "身故", "意外傷害", "住院", "豁免保費"].map((type) => (
                 <div key={type} className="flex items-center space-x-2">
                   <Checkbox
                     id={`claim-${type}`}
@@ -211,10 +211,11 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
               <Label htmlFor="accidentDate">事故時間 *</Label>
               <Input
                 id="accidentDate"
-                type="datetime-local"
+                type="text"
                 value={formData.accidentDate}
                 onChange={(e) => updateFormData({ accidentDate: e.target.value })}
                 required
+                placeholder="请输入事故时间"
               />
             </div>
             <div>

@@ -61,8 +61,10 @@ def process_image(image_path):
     try:
         print(f"INFO: Processing image at {image_path} with auto_sharpen...")
         sharpened = auto_sharpen(image_path, show_steps=False)
+        # 获取原图片的文件后缀名
+        original_suffix = Path(image_path).suffix
         # 保存锐化后的图片到临时文件
-        out_path = str(Path(image_path).with_suffix('')) + '_sharpened.png'
+        out_path = str(Path(image_path).with_suffix('')) + '_sharpened_' + original_suffix
         cv2.imwrite(out_path, sharpened)
         print(f"INFO: Sharpened image saved to {out_path}")
         return out_path

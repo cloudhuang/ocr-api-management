@@ -1,4 +1,7 @@
+import os
+
 import ollama
+from openai import OpenAI
 import copy
 import pprint
 
@@ -46,7 +49,7 @@ def prepare_ollama_messages(task_history, process_image_func):
     return ollama_messages, None
 
 
-def get_ollama_response(messages, model, host):
+def get_ollama_response(messages, model, host, key):
     """
     Sends a request to the Ollama API and returns the response.
     """
