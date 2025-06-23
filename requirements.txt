@@ -1,0 +1,6 @@
+paddleocr~=3.0.2
+paddlepaddle~=3.0.0
+gradio
+ollama
+opencv-python
+opencv-contrib-python
