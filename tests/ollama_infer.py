@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from src.llm_client import prepare_ollama_messages, get_ollama_response
+from src.prompts import SYSTEM_PROMPT
 from src.utils import process_image
 
 # 允许直接命令行运行本脚本时找到 src 目录
@@ -10,68 +11,13 @@ sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
 
 # ==== 配置区 ====
-OLLAMA_MODEL = 'qwen2.5vl:32b'  # 或你的多模态模型名
+OLLAMA_MODEL = 'qwen2.5vl:latest'  # 或你的多模态模型名
 OLLAMA_HOST = 'http://192.168.235.62:11434'  # Ollama 服务地址
 OLLAMA_KEY = 'KEY'
 
 # 测试图片和文本
 TEST_IMAGE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '442.jpg'))
-TEST_TEXT = """
-你是一個高精度的 AI 表單辨識服務。你的唯一任務是分析在此次請求中提供的圖片，並根據下方的 JSON 結構，**只輸出你高度確信辨識正確的手寫內容**。**不要進行任何對話，直接輸出 JSON 結果。**
-
-**核心指令：**
-分析提供的圖片，找出所有手寫的**繁體中文**內容，並將其填入下方 JSON 模板的 `value` 欄位中。你的所有輸出都必須基於圖片中的視覺證據。
-
----
-**辨識準確性與置信度規則 (Accuracy and Confidence Rules)：**
-
-1.  **高置信度原則**：只有在您對辨識結果有高置信度時，才輸出文字內容。
-2.  **無法辨識處理**：如果某個欄位有手寫痕跡，但因字跡潦草或影像模糊而**無法準確辨識**，請在該欄位的 `value` 中返回特定字串 `"[UNRECOGNIZABLE]"`。
-3.  **嚴禁猜測**：**嚴禁猜測**或捏造內容。不確定即等於無法辨識。準確性是最高優先級。
-4.  **空白欄位處理**：如果某個欄位**完全空白**，沒有任何手寫痕跡，其 `value` 應為**空字串 `""`**。這與「無法辨識」是兩種不同的情況。
-5.  **簽名處理**：對於簽名欄位 (如「申請人/受益人簽名」)，由於其高度個人化且通常難以辨識為標準文字，請一律在 `value` 中返回 `"[SIGNATURE]"`，除非簽名為非常清晰的正楷。
-
----
-**擷取規則：**
-
-*   **欄位定位**：對於 JSON 模板中的每個物件，使用其 `name` 欄位（例如 `"事故人姓名"`）在圖片中找到對應的印刷標籤。
-*   **內容擷取**：擷取該標籤旁空格處的**手寫內容**。
-*   **勾選框處理**：找出被手寫「✓」標記的選項，並將**該選項的印刷文字**（例如 `"個人險"`）作為 `value`。
-*   **複選框處理**：將所有被勾選的項目文字用逗號分隔後作為 `value`（例如 `"醫療, 癌症"`）。
-
-**輸出格式：絕對嚴格**
-你的回覆**必須是、也只能是**一個完整的 JSON 陣列。**禁止**包含任何 `json` 程式碼區塊標籤、開頭的問候語、結尾的解釋或其他任何非 JSON 內容。
-
-**JSON 模板與結構：**
-```json
-[
-  {
-    "page": 1,
-    "code": "insuredName",
-    "name": "事故人姓名",
-    "description": "需要理賠的被保險人/事故人全名。"
-  },
-  {
-    "page": 1,
-    "code": "mailingAddress",
-    "name": "通訊處",
-    "description": "用於接收理賠相關文件的郵寄地址。"
-  },
-  {
-    "page": 1,
-    "code": "insuredIdNumber",
-    "name": "事故人身分證字號",
-    "description": "被保險人/事故人的身分證號碼。"
-  },
-  // ... 此處省略其餘的 JSON 模板，以節省篇幅 ...
-  {
-    "page": 3,
-    "code": "authDate",
-    "name": "授權書-同意日期",
-    "description": "簽署此授權同意書的日期。"
-  }
-]
-"""
+TEST_TEXT = SYSTEM_PROMPT
 
 # ==== 构造 task_history，模拟一次多模态对话 ====
 task_history = [

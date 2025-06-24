@@ -4,8 +4,10 @@ import ollama
 from openai import OpenAI
 import copy
 import pprint
+import base64
 
-from src.utils import is_video_file
+from src.prompts import SYSTEM_PROMPT, USER_PROMPT
+from src.utils import is_video_file, process_image
 
 
 def prepare_ollama_messages(task_history, process_image_func):
@@ -84,6 +86,59 @@ def get_ollama_response(messages, model, host, key):
         error_message = (
             f"**Error:** Could not connect to OLLAMA or process the request. "
             f"Please ensure OLLAMA is running and the model '{model}' is available.\n\n"
+            f"*Details: {e}*"
+        )
+        return None, error_message 
+
+
+def get_openai_response(image_path, model, host, key):
+    """
+    用 OpenAI SDK 方式调用多模态模型，支持图片+文本推理。
+    先自动锐化图片，再推理。
+    返回 (response_content, error)
+    """
+    try:
+        processed_image_path = process_image(image_path)
+        with open(processed_image_path, "rb") as image_file:
+            base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+        client = OpenAI(
+            api_key=key,
+            base_url=host.rstrip("/") + "/v1",
+        )
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT
+                },
+                {
+                  "role": "user",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": USER_PROMPT
+                    },
+                    {
+                      "type": "image_url",
+                      "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                      }
+                    }
+                  ]
+                }
+              ],
+              stream=False,
+              stream_options={"include_usage":True}
+            )
+        content = response.choices[0].message.content
+        print(f"[DEBUG] = OpenAI({model}): {content}")
+        return content, None
+    except Exception as e:
+        print(f"An error occurred with OpenAI SDK: {e}")
+        error_message = (
+            f"**Error:** Could not connect to OpenAI SDK or process the request. "
+            f"Please ensure the OpenAI-compatible server is running and the model '{model}' is available.\n\n"
             f"*Details: {e}*"
         )
         return None, error_message 
