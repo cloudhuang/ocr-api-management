@@ -13,62 +13,15 @@ type ApiDataItem = {
   value: string;
 };
 
-const codeToField: Record<string, keyof ClaimFormData> = {
-  insuredName: "insuredName",
-  mailingAddress: "mailingAddress",
-  insuredIdNumber: "insuredIdNumber",
-  insuredBirthDate: "insuredBirthDate",
-  policyHolder: "policyHolder",
-  currentOccupation: "currentOccupation",
-  occupationCode: "occupationCode",
-  policyNumber: "policyNumber",
-  insuranceType: "insuranceType",
-  claimType: "claimType",
-  incidentCause: "incidentCause",
-  incidentRegion: "incidentRegion",
-  hospitalsVisited: "hospitalsVisited",
-  accidentDate: "accidentDate",
-  accidentLocation: "accidentLocation",
-  accidentDescription: "accidentDescription",
-  policeName: "policeName",
-  policeContact: "policeContact",
-  policeUnit: "policeUnit",
-  beneficiaryName: "beneficiaryName",
-  beneficiaryIdNumber: "beneficiaryIdNumber",
-  beneficiaryAccount: "beneficiaryAccount",
-  bankAccount: "bankAccount",
-  bankAccountCode: "bankAccountCode",
-  accountNumber: "accountNumber",
-  contactAddress: "contactAddress",
-  mobilePhone: "mobilePhone",
-  email: "email",
-  landlinePhone: "landlinePhone",
-  applicantSignatureName: "applicantSignatureName",
-  applicantIdNumber: "applicantIdNumber",
-  legalGuardianName: "legalGuardianName",
-  legalGuardianIdNumber: "legalGuardianIdNumber",
-  applicationDate: "applicationDate",
-  authInsuredName: "authInsuredName",
-  authInsuredDob: "authInsuredDob",
-  authInsuredIdNumber: "authInsuredIdNumber",
-  authContractEffectiveDate: "authContractEffectiveDate",
-  authAilmentOrInjury: "authAilmentOrInjury",
-  authConsentingPersonName: "authConsentingPersonName",
-  authConsentingPersonIdNumber: "authConsentingPersonIdNumber",
-  authLegalGuardianSignatureName: "authLegalGuardianSignatureName",
-  authLegalGuardianIdNumber: "authLegalGuardianIdNumber",
-  authDate: "authDate",
-};
-
 // 数据转换函数：将 API 数组转换为表单所需的扁平对象
 const transformApiDataToFormData = (apiData: ApiDataItem[]): ClaimFormData => {
   const defaultFormData: ClaimFormData = {
-    insuredName: "", mailingAddress: "", insuredIdNumber: "", insuredBirthDate: "",
-    policyHolder: "", currentOccupation: "", occupationCode: "", policyNumber: "",
-    insuranceType: "", claimType: [], incidentCause: "", incidentRegion: "",
-    hospitalsVisited: "", accidentDate: "", accidentLocation: "", accidentDescription: "",
-    policeName: "", policeContact: "", policeUnit: "", beneficiaryName: "",
-    beneficiaryIdNumber: "", beneficiaryAccount: "", bankAccount: "", bankAccountCode: "",
+    insuredName: "", mailingAddress: "", insuredIdNumber: "", insuredDateOfBirth: "",
+    policyholderUnit: "", currentOccupation: "", occupationCode: "", policyNumber: "",
+    insuranceType: "", claimType: "", incidentCause: "", incidentRegion: "",
+    hospitalsVisited: "", incidentDateTime: "", incidentLocation: "", incidentDetails: "",
+    policeOfficerName: "", policeContactPhone: "", handlingPoliceUnit: "", beneficiaryName: "",
+    beneficiaryIdNumber: "", paymentAccountOption: "", bankNameAndBranch: "", bankCode: "",
     accountNumber: "", contactAddress: "", mobilePhone: "", email: "", landlinePhone: "",
     applicantSignatureName: "", applicantIdNumber: "", legalGuardianName: "",
     legalGuardianIdNumber: "", applicationDate: "", authInsuredName: "", authInsuredDob: "",
@@ -78,12 +31,8 @@ const transformApiDataToFormData = (apiData: ApiDataItem[]): ClaimFormData => {
   };
   const updates: Partial<ClaimFormData> = {};
   apiData.forEach(item => {
-    const key = codeToField[item.code];
-    if (!key) return;
-    if (key === 'claimType' && typeof item.value === 'string') {
-      updates[key] = item.value.split(',').map(s => s.trim()).filter(Boolean);
-    } else {
-      updates[key] = item.value as any;
+    if (item.code in defaultFormData) {
+      updates[item.code as keyof ClaimFormData] = item.value as any;
     }
   });
   return { ...defaultFormData, ...updates };
@@ -138,6 +87,12 @@ export default function Home() {
           <div className="w-full">
             {/* 将 handleUpload 函数和 isLoading 状态传递给上传组件 */}
             <UploadDocumentForm onUpload={handleUpload} isUploading={isLoading} />
+
+            {/* DEBUG: 显示识别返回的 JSON 数据 */}
+            <div className="mt-8 p-4 bg-gray-100 rounded">
+              <div className="font-bold mb-2 text-gray-700">DEBUG: 识别返回的 JSON 数据</div>
+              <pre className="text-xs overflow-x-auto whitespace-pre-wrap break-all">{JSON.stringify(claimData, null, 2)}</pre>
+            </div>
           </div>
         </div>
         <div className="flex-1 flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8">

@@ -6,7 +6,7 @@ import copy
 import pprint
 import base64
 
-from src.prompts import SYSTEM_PROMPT, USER_PROMPT
+from src.prompts import USER_PROMPT
 from src.utils import is_video_file, process_image
 
 
@@ -108,10 +108,6 @@ def get_openai_response(image_path, model, host, key):
         response = client.chat.completions.create(
             model=model,
             messages=[
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPT
-                },
                 {
                   "role": "user",
                   "content": [

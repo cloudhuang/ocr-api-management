@@ -52,12 +52,12 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
             />
           </div>
           <div>
-            <Label htmlFor="insuredBirthDate">出生日期 *</Label>
+            <Label htmlFor="insuredDateOfBirth">出生日期 *</Label>
             <Input
-              id="insuredBirthDate"
+              id="insuredDateOfBirth"
               type="date"
-              value={formData.insuredBirthDate}
-              onChange={(e) => updateFormData({ insuredBirthDate: e.target.value })}
+              value={formData.insuredDateOfBirth}
+              onChange={(e) => updateFormData({ insuredDateOfBirth: e.target.value })}
               required
             />
           </div>
@@ -110,11 +110,11 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
               />
             </div>
             <div>
-              <Label htmlFor="policyHolder">要保單位</Label>
+              <Label htmlFor="policyholderUnit">要保單位</Label>
               <Input
-                id="policyHolder"
-                value={formData.policyHolder}
-                onChange={(e) => updateFormData({ policyHolder: e.target.value })}
+                id="policyholderUnit"
+                value={formData.policyholderUnit}
+                onChange={(e) => updateFormData({ policyholderUnit: e.target.value })}
                 placeholder="僅在申請團體保險時需要填寫"
               />
             </div>
@@ -208,36 +208,32 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="accidentDate">事故時間 *</Label>
+              <Label htmlFor="incidentDateTime">事故時間 *</Label>
               <Input
-                id="accidentDate"
-                type="text"
-                value={formData.accidentDate}
-                onChange={(e) => updateFormData({ accidentDate: e.target.value })}
+                id="incidentDateTime"
+                type="datetime-local"
+                value={formData.incidentDateTime}
+                onChange={(e) => updateFormData({ incidentDateTime: e.target.value })}
                 required
-                placeholder="请输入事故时间"
               />
             </div>
             <div>
-              <Label htmlFor="accidentLocation">事故地點 *</Label>
+              <Label htmlFor="incidentLocation">事故地點 *</Label>
               <Input
-                id="accidentLocation"
-                value={formData.accidentLocation}
-                onChange={(e) => updateFormData({ accidentLocation: e.target.value })}
-                placeholder="詳細的事故發生地點"
+                id="incidentLocation"
+                value={formData.incidentLocation}
+                onChange={(e) => updateFormData({ incidentLocation: e.target.value })}
                 required
               />
             </div>
           </div>
 
           <div>
-            <Label htmlFor="accidentDescription">經過詳情 *</Label>
+            <Label htmlFor="incidentDetails">經過詳情 *</Label>
             <Textarea
-              id="accidentDescription"
-              value={formData.accidentDescription}
-              onChange={(e) => updateFormData({ accidentDescription: e.target.value })}
-              placeholder="詳細描述事故發生的經過"
-              rows={4}
+              id="incidentDetails"
+              value={formData.incidentDetails}
+              onChange={(e) => updateFormData({ incidentDetails: e.target.value })}
               required
             />
           </div>
@@ -262,104 +258,27 @@ export default function Step1({ formData, updateFormData }: Step1Props) {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="policeName">員警姓名</Label>
+            <Label htmlFor="policeOfficerName">員警姓名</Label>
             <Input
-              id="policeName"
-              value={formData.policeName}
-              onChange={(e) => updateFormData({ policeName: e.target.value })}
+              id="policeOfficerName"
+              value={formData.policeOfficerName}
+              onChange={(e) => updateFormData({ policeOfficerName: e.target.value })}
             />
           </div>
           <div>
-            <Label htmlFor="policeContact">聯絡電話</Label>
+            <Label htmlFor="policeContactPhone">聯絡電話</Label>
             <Input
-              id="policeContact"
-              value={formData.policeContact}
-              onChange={(e) => updateFormData({ policeContact: e.target.value })}
+              id="policeContactPhone"
+              value={formData.policeContactPhone}
+              onChange={(e) => updateFormData({ policeContactPhone: e.target.value })}
             />
           </div>
           <div className="md:col-span-2">
-            <Label htmlFor="policeUnit">處理憲警單位</Label>
+            <Label htmlFor="handlingPoliceUnit">處理憲警單位</Label>
             <Input
-              id="policeUnit"
-              value={formData.policeUnit}
-              onChange={(e) => updateFormData({ policeUnit: e.target.value })}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 受益人領款資料 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg text-blue-700">受益人領款資料</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>給付方式 *</Label>
-            <RadioGroup
-              value={formData.beneficiaryAccount}
-              onValueChange={(value) => updateFormData({ beneficiaryAccount: value })}
-              className="flex gap-4 mt-2"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="same" id="pay-same" />
-                <Label htmlFor="pay-same">同「事故人」</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="direct" id="pay-direct" />
-                <Label htmlFor="pay-direct">匯入受益人帳戶</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="beneficiaryName">受益人姓名</Label>
-              <Input
-                id="beneficiaryName"
-                value={formData.beneficiaryName}
-                onChange={(e) => updateFormData({ beneficiaryName: e.target.value })}
-                placeholder="若選擇匯入受益人帳戶"
-              />
-            </div>
-            <div>
-              <Label htmlFor="beneficiaryIdNumber">受益人身分證字號</Label>
-              <Input
-                id="beneficiaryIdNumber"
-                value={formData.beneficiaryIdNumber}
-                onChange={(e) => updateFormData({ beneficiaryIdNumber: e.target.value })}
-                placeholder="若選擇匯入受益人帳戶"
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="bankAccount">金融機構及分行名稱</Label>
-              <Input
-                id="bankAccount"
-                value={formData.bankAccount}
-                onChange={(e) => updateFormData({ bankAccount: e.target.value })}
-                placeholder="例如：國泰世華銀行 忠孝分行"
-              />
-            </div>
-            <div>
-              <Label htmlFor="bankAccountCode">金融機構及分行代碼</Label>
-              <Input
-                id="bankAccountCode"
-                value={formData.bankAccountCode}
-                onChange={(e) => updateFormData({ bankAccountCode: e.target.value })}
-                placeholder="例如：013-0016"
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="accountNumber">帳號</Label>
-            <Input
-              id="accountNumber"
-              value={formData.accountNumber}
-              onChange={(e) => updateFormData({ accountNumber: e.target.value })}
-              placeholder="金融機構帳號"
+              id="handlingPoliceUnit"
+              value={formData.handlingPoliceUnit}
+              onChange={(e) => updateFormData({ handlingPoliceUnit: e.target.value })}
             />
           </div>
         </CardContent>

@@ -9,31 +9,30 @@ import Step2 from "./step2"
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react"
 
 export interface FormData {
-  // Page 1 fields
   insuredName: string
   mailingAddress: string
   insuredIdNumber: string
-  insuredBirthDate: string
-  policyHolder: string
+  insuredDateOfBirth: string
+  policyholderUnit: string
   currentOccupation: string
   occupationCode: string
   policyNumber: string
   insuranceType: string
-  claimType: string[]
+  claimType: string
   incidentCause: string
   incidentRegion: string
   hospitalsVisited: string
-  accidentDate: string
-  accidentLocation: string
-  accidentDescription: string
-  policeName: string
-  policeContact: string
-  policeUnit: string
+  incidentDateTime: string
+  incidentLocation: string
+  incidentDetails: string
+  policeOfficerName: string
+  policeContactPhone: string
+  handlingPoliceUnit: string
   beneficiaryName: string
   beneficiaryIdNumber: string
-  beneficiaryAccount: string
-  bankAccount: string
-  bankAccountCode: string
+  paymentAccountOption: string
+  bankNameAndBranch: string
+  bankCode: string
   accountNumber: string
   contactAddress: string
   mobilePhone: string
@@ -44,8 +43,6 @@ export interface FormData {
   legalGuardianName: string
   legalGuardianIdNumber: string
   applicationDate: string
-
-  // Page 3 fields
   authInsuredName: string
   authInsuredDob: string
   authInsuredIdNumber: string
@@ -69,27 +66,27 @@ export default function ClaimForm({ initialData }: ClaimFormProps) {
     insuredName: "",
     mailingAddress: "",
     insuredIdNumber: "",
-    insuredBirthDate: "",
-    policyHolder: "",
+    insuredDateOfBirth: "",
+    policyholderUnit: "",
     currentOccupation: "",
     occupationCode: "",
     policyNumber: "",
     insuranceType: "",
-    claimType: [],
+    claimType: "",
     incidentCause: "",
     incidentRegion: "",
     hospitalsVisited: "",
-    accidentDate: "",
-    accidentLocation: "",
-    accidentDescription: "",
-    policeName: "",
-    policeContact: "",
-    policeUnit: "",
+    incidentDateTime: "",
+    incidentLocation: "",
+    incidentDetails: "",
+    policeOfficerName: "",
+    policeContactPhone: "",
+    handlingPoliceUnit: "",
     beneficiaryName: "",
     beneficiaryIdNumber: "",
-    beneficiaryAccount: "",
-    bankAccount: "",
-    bankAccountCode: "",
+    paymentAccountOption: "",
+    bankNameAndBranch: "",
+    bankCode: "",
     accountNumber: "",
     contactAddress: "",
     mobilePhone: "",
@@ -116,7 +113,10 @@ export default function ClaimForm({ initialData }: ClaimFormProps) {
   // 当 initialData prop 改变时 (即API调用成功后), 更新表单的内部状态
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData(prev => ({
+        ...prev,
+        ...initialData,
+      }));
     }
   }, [initialData]);
 
