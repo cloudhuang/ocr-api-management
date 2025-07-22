@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Plus, List } from "lucide-react";
+import { Plus, List, Image } from "lucide-react";
 import Link from "next/link";
 
 export default function Navigation() {
@@ -31,6 +31,14 @@ export default function Navigation() {
             >
               <Plus className="h-4 w-4" />
               Create API
+            </Button>
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2"
+              onClick={() => router.push("/ocr")}
+            >
+              <Image className="h-4 w-4" />
+              OCR Test
             </Button>
           </div>
         </div>
