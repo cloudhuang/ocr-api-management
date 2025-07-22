@@ -48,6 +48,7 @@ def prepare_ollama_messages(task_history, process_image_func):
             ollama_messages.append({'role': 'assistant', 'content': a})
 
         i += 1
+
     return ollama_messages, None
 
 
@@ -88,10 +89,10 @@ def get_ollama_response(messages, model, host, key):
             f"Please ensure OLLAMA is running and the model '{model}' is available.\n\n"
             f"*Details: {e}*"
         )
-        return None, error_message 
+        return None, error_message
 
 
-def get_openai_response(image_path, model, host, key):
+def get_openai_response(image_path, model, host, key, prompt=USER_PROMPT):
     """
     用 OpenAI SDK 方式调用多模态模型，支持图片+文本推理。
     先自动锐化图片，再推理。
@@ -109,24 +110,24 @@ def get_openai_response(image_path, model, host, key):
             model=model,
             messages=[
                 {
-                  "role": "user",
-                  "content": [
-                    {
-                      "type": "text",
-                      "text": USER_PROMPT
-                    },
-                    {
-                      "type": "image_url",
-                      "image_url": {
-                        "url": f"data:image/jpeg;base64,{base64_image}"
-                      }
-                    }
-                  ]
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        }
+                    ]
                 }
-              ],
-              stream=False,
-              stream_options={"include_usage":True}
-            )
+            ],
+            stream=False,
+            stream_options={"include_usage": True}
+        )
         content = response.choices[0].message.content
         print(f"[DEBUG] = OpenAI({model}): {content}")
         return content, None
@@ -137,4 +138,4 @@ def get_openai_response(image_path, model, host, key):
             f"Please ensure the OpenAI-compatible server is running and the model '{model}' is available.\n\n"
             f"*Details: {e}*"
         )
-        return None, error_message 
+        return None, error_message
