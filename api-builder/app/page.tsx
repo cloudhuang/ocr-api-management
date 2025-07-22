@@ -1,13 +1,10 @@
-"use client"
+"use client";
 
-import ApiList from "../api-list"
-import Navigation from "../components/navigation"
-
+import ApiList from "@/components/api-list";
 export default function Page() {
   return (
     <div>
-      <Navigation />
       <ApiList />
     </div>
-  )
+  );
 }

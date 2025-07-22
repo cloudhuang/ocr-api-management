@@ -10,11 +10,12 @@ CORS(app, supports_credentials=True)
 swagger = Swagger(app)
 
 # Import routes
-from src.router import infer_route, claims_route
+from src.router import infer_route, claims_route, apis_route
 
 # Register routes
 app.register_blueprint(infer_route.infer_api, url_prefix='/')
 app.register_blueprint(claims_route.claims_api, url_prefix='/')
+app.register_blueprint(apis_route.apis_api, url_prefix='/api')
 
 if __name__ == '__main__':
     app.run(port=8000, host='0.0.0.0')

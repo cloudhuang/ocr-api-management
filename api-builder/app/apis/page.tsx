@@ -1,13 +1,11 @@
-"use client"
+"use client";
 
-import ApiBuilder from "../../api-builder"
-import Navigation from "../../components/navigation"
+import ApiBuilder from "@/components/api-builder";
 
 export default function CreateApiPage() {
   return (
-    <div>
-      <Navigation />
+    <div className="min-h-screen bg-gray-50">
       <ApiBuilder />
     </div>
-  )
+  );
 }
