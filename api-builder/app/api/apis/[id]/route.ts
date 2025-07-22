@@ -78,7 +78,6 @@ export async function PUT(
       definition: {
         apiCode: body.apiCode,
         apiName: body.apiName,
-        apiPath: body.apiPath,
         description: body.description,
         project: body.project,
         tags: body.tags || [],

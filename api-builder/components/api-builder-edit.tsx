@@ -30,7 +30,6 @@ interface ApiData {
   definition: {
     apiCode: string;
     apiName: string;
-    apiPath: string;
     project: string;
     tags: string[];
     rules: string[];
@@ -50,7 +49,6 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
   // 从 apiData 中提取数据
   const [apiCode, setApiCode] = useState(apiData.definition.apiCode || "")
   const [apiName, setApiName] = useState(apiData.definition.apiName || apiData.name || "")
-  const [apiPath, setApiPath] = useState(apiData.definition.apiPath || "")
   const [description, setDescription] = useState(apiData.definition.description || apiData.description || "")
   const [project, setProject] = useState(apiData.definition.project || "")
   const [responseFormat, setResponseFormat] = useState(apiData.definition.responseFormat || "markdown")
@@ -132,7 +130,6 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
     const updatedApiData = {
       apiCode,
       apiName,
-      apiPath,
       description,
       project,
       tags: tags.map((tag) => tag.text),
@@ -204,14 +201,6 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
               API NAME
             </Label>
             <Input id="api-name" value={apiName} onChange={(e) => setApiName(e.target.value)} className="w-full" />
-          </div>
-
-          {/* API Path */}
-          <div className="space-y-2">
-            <Label htmlFor="api-path" className="text-sm font-medium">
-              API PATH
-            </Label>
-            <Input id="api-path" value={apiPath} onChange={(e) => setApiPath(e.target.value)} className="w-full" />
           </div>
 
           {/* Description */}

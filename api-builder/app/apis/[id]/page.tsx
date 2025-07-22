@@ -15,7 +15,7 @@ interface ApiDetails {
   definition: {
     apiCode: string;
     apiName: string;
-    apiPath: string;
+    description?: string;
     project: string;
     tags: string[];
     rules: string[];
@@ -164,10 +164,7 @@ export default function ApiDetailsPage() {
               <p>{api.definition.apiName || api.name}</p>
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-2">API Path</h3>
-              <code className="bg-gray-100 px-3 py-2 rounded block text-sm">{api.definition.apiPath}</code>
-            </div>
+
 
             <div>
               <h3 className="text-lg font-medium mb-2">Description</h3>

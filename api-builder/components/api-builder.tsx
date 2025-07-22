@@ -27,7 +27,6 @@ export default function ApiBuilder() {
   const router = useRouter()
   const [apiCode, setApiCode] = useState("");
   const [apiName, setApiName] = useState("");
-  const [apiPath, setApiPath] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
   const [responseFormat, setResponseFormat] = useState("markdown");
@@ -98,7 +97,6 @@ export default function ApiBuilder() {
     const apiData = {
       apiCode,
       apiName,
-      apiPath,
       description,
       project,
       tags: tags.map((tag) => tag.text),
@@ -175,18 +173,7 @@ export default function ApiBuilder() {
             />
           </div>
 
-          {/* API Path */}
-          <div className="space-y-2">
-            <Label htmlFor="api-path" className="text-sm font-medium">
-              API PATH
-            </Label>
-            <Input
-              id="api-path"
-              value={apiPath}
-              onChange={(e) => setApiPath(e.target.value)}
-              className="w-full"
-            />
-          </div>
+
 
           {/* Description */}
           <div className="space-y-2">

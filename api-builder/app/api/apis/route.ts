@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
         // 包含所有前端发送的字段
         apiCode: body.apiCode,
         apiName: body.apiName,
-        apiPath: body.apiPath,
         description: body.description,
         project: body.project,
         tags: body.tags || [],

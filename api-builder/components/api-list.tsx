@@ -14,7 +14,6 @@ interface ApiItem {
   id: string
   apiCode: string
   apiName: string
-  apiPath: string
   description: string
   project: string
   tags: string[]
@@ -52,7 +51,6 @@ export default function ApiList() {
           id: api.id.toString(),
           apiCode: definition.apiCode || "",
           apiName: api.name || definition.apiName || "",
-          apiPath: definition.apiPath || "",
           description: api.description || definition.description || "",
           project: definition.project || "",
           tags: definition.tags || [],
@@ -205,7 +203,6 @@ export default function ApiList() {
                   <TableRow>
                     <TableHead>API Code</TableHead>
                     <TableHead>API Name</TableHead>
-                    <TableHead>Path</TableHead>
                     <TableHead>Project</TableHead>
                     <TableHead>Tags</TableHead>
                     <TableHead>Format</TableHead>
@@ -223,9 +220,6 @@ export default function ApiList() {
                           <div className="font-medium">{api.apiName}</div>
                           <div className="text-sm text-muted-foreground truncate max-w-[200px]">{api.description}</div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <code className="bg-gray-100 px-2 py-1 rounded text-sm">{api.apiPath}</code>
                       </TableCell>
                       <TableCell>{api.project}</TableCell>
                       <TableCell>
