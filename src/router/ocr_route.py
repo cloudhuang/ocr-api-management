@@ -2,9 +2,14 @@ from flask import Blueprint, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.models import ApiDefinition, Base
+from src.prompt_generator import create_ocr_prompt
+from src.llm_client import get_openai_response
+from src.config import VLLM_MODEL, OLLAMA_HOST, OLLAMA_KEY
 import os
 import json
 import logging
+import tempfile
+import time
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -79,19 +84,86 @@ def process_ocr():
         image_file.seek(0, os.SEEK_END)
         file_size = image_file.tell()
         image_file.seek(0)  # 重置文件指针
-        
+
         logger.info(f"Received image: {filename}, size: {file_size} bytes")
-        
-        # 这里可以添加实际的 OCR 处理逻辑
-        # 目前只返回 API 定义和图片信息
-        return jsonify({
-            'message': 'OCR 请求已接收',
-            'api': matching_api,
-            'image': {
-                'filename': filename,
-                'size': file_size
-            }
-        }), 200
+
+        # 保存临时图片文件
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
+            image_file.save(tmp_file.name)
+            tmp_image_path = tmp_file.name
+
+        try:
+            # 根据API定义生成PROMPT
+            custom_prompt = create_ocr_prompt(matching_api['definition'])
+            logger.info(f"Generated custom prompt for API {api_code}")
+
+            # 调用OCR推理
+            logger.info(f"Starting OCR inference with model {VLLM_MODEL}")
+            start_time = time.time()
+
+            ocr_result, error = get_openai_response(
+                image_path=tmp_image_path,
+                model=VLLM_MODEL,
+                host=OLLAMA_HOST,
+                key=OLLAMA_KEY,
+                prompt=custom_prompt
+            )
+
+            inference_time = time.time() - start_time
+            logger.info(f"OCR inference completed in {inference_time:.2f} seconds")
+
+            if error:
+                logger.error(f"OCR inference failed: {error}")
+                return jsonify({'error': f'OCR 推理失败: {error}'}), 500
+
+            # 尝试解析结果（如果是JSON格式）
+            parsed_result = None
+            response_format = matching_api['definition'].get('responseFormat', 'json')
+
+            if response_format.lower() == 'json':
+                try:
+                    # 清理可能的markdown标记
+                    cleaned_result = ocr_result.strip()
+                    if cleaned_result.startswith('```json'):
+                        cleaned_result = cleaned_result[7:]
+                    if cleaned_result.endswith('```'):
+                        cleaned_result = cleaned_result[:-3]
+                    cleaned_result = cleaned_result.strip()
+
+                    parsed_result = json.loads(cleaned_result)
+                    logger.info("Successfully parsed JSON result")
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Failed to parse JSON result: {e}")
+                    # 如果解析失败，仍然返回原始结果
+                    parsed_result = {"raw_text": ocr_result, "parse_error": str(e)}
+
+            # 返回OCR结果
+            return jsonify({
+                'message': 'OCR 处理完成',
+                'api': {
+                    'id': matching_api['id'],
+                    'api_code': api_code,
+                    'name': matching_api['name'],
+                    'response_format': response_format
+                },
+                'image': {
+                    'filename': filename,
+                    'size': file_size
+                },
+                'ocr_result': {
+                    'raw_text': ocr_result,
+                    'parsed_result': parsed_result,
+                    'inference_time': round(inference_time, 2)
+                }
+            }), 200
+
+        finally:
+            # 清理临时文件
+            try:
+                os.unlink(tmp_image_path)
+                logger.info(f"Cleaned up temporary file: {tmp_image_path}")
+            except Exception as e:
+                logger.warning(f"Failed to clean up temporary file: {e}")
         
     except Exception as e:
         logger.error(f"Error processing OCR request: {str(e)}")
