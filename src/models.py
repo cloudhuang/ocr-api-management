@@ -12,7 +12,8 @@ class ApiDefinition(Base):
     __tablename__ = 'api_definitions'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(128), nullable=False, unique=True, doc="API 名称")
+    api_code = Column(String(64), nullable=False, unique=True, index=True, doc="API 代码，用于唯一标识API")
+    name = Column(String(128), nullable=False, doc="API 名称")
     description = Column(String(256), nullable=True, doc="API 描述")
     definition = Column(Text, nullable=False, doc="API 定义的 JSON 字符串")
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, doc="创建时间") 
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, doc="创建时间")

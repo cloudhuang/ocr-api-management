@@ -44,28 +44,27 @@ def process_ocr():
     # 通过 API CODE 查询 API 定义
     session = SessionLocal()
     try:
-        # 查询所有 API 定义
-        api_defs = session.query(ApiDefinition).all()
-        
-        # 在 API 定义中查找匹配的 API CODE
-        matching_api = None
-        for api_def in api_defs:
-            try:
-                definition = json.loads(api_def.definition)
-                if definition.get('apiCode') == api_code:
-                    matching_api = {
-                        'id': api_def.id,
-                        'name': api_def.name,
-                        'description': api_def.description,
-                        'definition': definition
-                    }
-                    break
-            except Exception as e:
-                logger.error(f"Error parsing API definition: {str(e)}")
-                continue
-        
-        if not matching_api:
+        # 直接通过 api_code 字段查询 API 定义
+        # 使用专门的字段查询，性能更好且兼容所有数据库
+        api_def = session.query(ApiDefinition).filter(
+            ApiDefinition.api_code == api_code
+        ).first()
+
+        if not api_def:
             return jsonify({'error': f'未找到 API CODE 为 {api_code} 的 API 定义'}), 404
+
+        # 解析找到的 API 定义
+        try:
+            definition = json.loads(api_def.definition)
+            matching_api = {
+                'id': api_def.id,
+                'name': api_def.name,
+                'description': api_def.description,
+                'definition': definition
+            }
+        except Exception as e:
+            logger.error(f"Error parsing API definition: {str(e)}")
+            return jsonify({'error': 'API 定义格式错误'}), 500
         
         # 打印 API 定义到控制台
         logger.info(f"Found API definition for code {api_code}:")

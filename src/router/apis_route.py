@@ -23,27 +23,43 @@ def create_api_definition():
     """
     data = request.get_json()
     print("Received data:", data)
-    
+
     if not data or 'name' not in data or 'definition' not in data:
         return jsonify({'error': '缺少必要参数 name 或 definition'}), 400
-    
+
     name = data['name']
     description = data.get('description', '')
     definition = data['definition']
-    
+
+    # 从 definition 中提取 apiCode
+    api_code = definition.get('apiCode')
+    if not api_code:
+        return jsonify({'error': '缺少必要参数 apiCode'}), 400
+
     session = SessionLocal()
     try:
+        # 检查 api_code 是否已存在
+        existing_api = session.query(ApiDefinition).filter(ApiDefinition.api_code == api_code).first()
+        if existing_api:
+            return jsonify({'error': f'API CODE {api_code} 已存在'}), 409
+
         # 将 definition 转换为 JSON 字符串
         definition_json = json.dumps(definition)
-        
+
         # 创建 API 定义记录
-        api_def = ApiDefinition(name=name, description=description, definition=definition_json)
+        api_def = ApiDefinition(
+            api_code=api_code,
+            name=name,
+            description=description,
+            definition=definition_json
+        )
         session.add(api_def)
         session.commit()
         
         return jsonify({
-            'message': 'API 定义已保存', 
+            'message': 'API 定义已保存',
             'id': api_def.id,
+            'api_code': api_def.api_code,
             'name': api_def.name
         }), 201
     except Exception as e:
@@ -72,6 +88,7 @@ def get_api_definitions():
                 
             result.append({
                 'id': api_def.id,
+                'api_code': api_def.api_code,
                 'name': api_def.name,
                 'description': api_def.description,
                 'definition': definition,
@@ -105,6 +122,7 @@ def get_api_definition(api_id):
             
         result = {
             'id': api_def.id,
+            'api_code': api_def.api_code,
             'name': api_def.name,
             'description': api_def.description,
             'definition': definition,
@@ -130,24 +148,39 @@ def update_api_definition(api_id):
     name = data['name']
     description = data.get('description', '')
     definition = data['definition']
-    
+
+    # 从 definition 中提取 apiCode
+    api_code = definition.get('apiCode')
+    if not api_code:
+        return jsonify({'error': '缺少必要参数 apiCode'}), 400
+
     session = SessionLocal()
     try:
         api_def = session.query(ApiDefinition).filter(ApiDefinition.id == api_id).first()
-        
+
         if not api_def:
             return jsonify({'error': f'API 定义 ID {api_id} 不存在'}), 404
-        
+
+        # 检查 api_code 是否与其他记录冲突（除了当前记录）
+        existing_api = session.query(ApiDefinition).filter(
+            ApiDefinition.api_code == api_code,
+            ApiDefinition.id != api_id
+        ).first()
+        if existing_api:
+            return jsonify({'error': f'API CODE {api_code} 已被其他API使用'}), 409
+
         # 更新 API 定义
+        api_def.api_code = api_code
         api_def.name = name
         api_def.description = description
         api_def.definition = json.dumps(definition)
-        
+
         session.commit()
-        
+
         return jsonify({
             'message': f'API 定义 ID {api_id} 已更新',
             'id': api_def.id,
+            'api_code': api_def.api_code,
             'name': api_def.name
         }), 200
     except Exception as e:
