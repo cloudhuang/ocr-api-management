@@ -8,43 +8,161 @@ from typing import Dict, List, Any
 
 class OCRPromptGenerator:
     """OCR PROMPT 生成器类"""
-    
+
     def __init__(self):
-        self.base_system_prompt = """你是一個高精度的 AI 表單辨識服務。你的唯一任務是分析在此次請求中提供的圖片，並根據下方的要求，返回识别的结果。
+        # 语言配置
+        self.language_configs = {
+            "english": {
+                "name": "English",
+                "instruction": "You must respond in English only. If the original text is in Chinese, Japanese, or other languages, translate ALL content to English while preserving the document structure.",
+                "date_format": "yyyy-MM-dd",
+                "currency_note": "Keep original currency symbols",
+                "translation_note": "Translate ALL field names and content to English. Do not leave any Chinese or Japanese text untranslated."
+            },
+            "simplified_chinese": {
+                "name": "简体中文",
+                "instruction": "必须使用简体中文回复。如果原文是英文、日文或其他语言，请将所有内容翻译为简体中文，同时保持文档结构。",
+                "date_format": "yyyy年MM月dd日 或 yyyy-MM-dd",
+                "currency_note": "保持原有货币符号",
+                "translation_note": "将所有字段名称和内容翻译为简体中文。不要保留英文或日文原文。"
+            },
+            "traditional_chinese": {
+                "name": "繁體中文",
+                "instruction": "必須使用繁體中文回覆。如果原文是英文、日文或其他語言，請將所有內容翻譯為繁體中文，同時保持文檔結構。",
+                "date_format": "yyyy年MM月dd日 或 yyyy-MM-dd",
+                "currency_note": "保持原有貨幣符號",
+                "translation_note": "將所有欄位名稱和內容翻譯為繁體中文。不要保留英文或日文原文。"
+            },
+            "japanese": {
+                "name": "日本語",
+                "instruction": "必ず日本語で回答してください。元のテキストが英語や中国語などの他の言語の場合は、すべての内容を日本語に翻訳してください。文書構造は保持してください。",
+                "date_format": "yyyy年MM月dd日 または yyyy-MM-dd",
+                "currency_note": "元の通貨記号を保持",
+                "translation_note": "すべてのフィールド名、内容、テキストを日本語に翻訳してください。英語や中国語をそのまま残さないでください。"
+            }
+        }
+
+        # JSON格式的基础提示词
+        self.json_base_prompt = """你是一个高精度的AI文档识别服务。你的任务是分析提供的图片，识别其中的文字内容，并按照指定的JSON格式返回结果。
 
 **核心指令：**
-分析提供的圖片，识别图片中的内容。你的所有輸出都必須基於圖片中的視覺證據。
+- 仔细分析图片中的所有文字内容（包括印刷体和手写体）
+- 识别表格、表单、文档中的各个字段和对应的值
+- 按照指定的JSON结构组织识别结果
+- 所有输出必须基于图片中的视觉证据
 
-**辨識準確性與置信度規則 (Accuracy and Confidence Rules)：**
-1. **高置信度原則**：只有在您對辨識結果有高置信度時，才輸出文字內容。
-2. **無法辨識處理**：如果某個欄位有手寫痕跡，但因字跡潦草或影像模糊而**無法準確辨識**，請在該欄位的 `value` 中返回特定字串 `"[UNRECOGNIZABLE]"`。
-3. **嚴禁猜測**：**嚴禁猜測**或捏造內容。不確定即等於無法辨識。準確性是最高優先級。
-4. **空白欄位處理**：如果某個欄位**完全空白**，沒有任何手寫痕跡，其 `value` 應為**空字串 `""`**。這與「無法辨識」是兩種不同的情況。
-5. **簽名處理**：對於簽名欄位 (如「申請人/受益人簽名」)，由於其高度個人化且通常難以辨識為標準文字，請一律在 `value` 中返回 `"[SIGNATURE]"`，除非簽名為非常清晰的正楷。"""
+**识别准确性规则：**
+1. **高置信度原则**：只输出你确信正确的内容
+2. **严禁猜测**：不确定的内容标记为无法识别，不要编造
+3. **空白处理**：完全空白的字段返回空字符串 ""
+4. **无法识别处理**：模糊不清的内容返回 "[UNRECOGNIZABLE]"
+"""
+
+        # Markdown格式的基础提示词
+        self.markdown_base_prompt = """你是一个高精度的AI文档识别服务。你的任务是分析提供的图片，识别其中的文字内容，并以Markdown格式返回结果。
+
+**核心指令：**
+- 仔细分析图片中的所有文字内容（包括印刷体和手写体）
+- 保持原始文档的结构和格式
+- 使用标准的Markdown语法组织内容
+- 所有输出必须基于图片中的视觉证据
+
+**格式化规则：**
+1. **标题层级**：使用 # ## ### 表示不同级别的标题
+2. **表格格式**：使用标准Markdown表格语法 | 列1 | 列2 |
+3. **列表格式**：使用 - 或 1. 表示列表项
+4. **强调文本**：使用 **粗体** 或 *斜体* 标记重要内容
+5. **保持结构**：尽量保持原文档的视觉结构和层次
+
+**识别准确性规则：**
+1. **高置信度原则**：只输出你确信正确的内容
+2. **严禁猜测**：不确定的内容用 [无法识别] 标记
+3. **保持格式**：严格遵循原文档的格式布局"""
+
+        # 手写体增强规则
+        self.handwriting_enhancement = """
+
+**手写体识别增强规则：**
+1. **手写体专注**：特别注意图片中的手写文字，包括草书、连笔字、个人笔迹等
+2. **笔迹分析**：仔细分析笔画的连接、字符的形状变化，即使字迹不工整也要尽力识别
+3. **上下文推理**：利用周围的印刷体文字和表格结构来辅助理解手写内容
+4. **常见模式**：识别常见的手写数字、日期、姓名、签名等模式
+5. **多种可能性**：如果手写字迹有歧义，在备注中提供可能的替代解释
+6. **签名处理**：签名字段返回 "[SIGNATURE]"（除非是清晰的正楷字）
+7. **手写特殊处理**：
+   - 模糊手写内容：返回 "[UNRECOGNIZABLE]"
+   - 签名字段：返回 "[SIGNATURE]"（除非是清晰正楷）
+   - 手写日期：尽量识别并转换为标准格式"""
+
+    def _get_language_instruction(self, language: str) -> str:
+        """获取语言指令"""
+        config = self.language_configs.get(language, self.language_configs["english"])
+        return f"""
+
+**语言要求：**
+- {config["instruction"]}
+- 翻译说明：{config["translation_note"]}
+- 日期格式：{config["date_format"]}
+- 货币处理：{config["currency_note"]}"""
+
+    def _get_markdown_table_example(self, language: str) -> str:
+        """根据语言获取Markdown表格示例"""
+        examples = {
+            "english": """**Markdown Table Example:**
+| Field Name | Content |
+| ---------- | ------- |
+| Name | John Doe |
+| Date | 2024-01-01 |
+| Amount | $1,000 |""",
+            "simplified_chinese": """**Markdown表格示例：**
+| 字段名称 | 内容 |
+| -------- | ---- |
+| 姓名 | 张三 |
+| 日期 | 2024-01-01 |
+| 金额 | ¥1,000 |""",
+            "traditional_chinese": """**Markdown表格示例：**
+| 欄位名稱 | 內容 |
+| -------- | ---- |
+| 姓名 | 張三 |
+| 日期 | 2024-01-01 |
+| 金額 | $1,000 |""",
+            "japanese": """**Markdownテーブル例：**
+| フィールド名 | 内容 |
+| ------------ | ---- |
+| 名前 | 田中太郎 |
+| 日付 | 2024-01-01 |
+| 金額 | ¥1,000 |"""
+        }
+        return examples.get(language, examples["english"])
 
     def generate_json_prompt(self, api_definition: Dict[str, Any]) -> str:
         """生成JSON格式的PROMPT"""
-        
+
         # 提取用户规则
         rules = api_definition.get('rules', [])
         user_rules = self._format_user_rules(rules)
-        
+
+        # 检查是否启用手写体识别
+        include_handwriting = api_definition.get('includeHandwriting', False)
+        handwriting_rules = self.handwriting_enhancement if include_handwriting else ""
+
+        # 获取语言指令
+        response_language = api_definition.get('responseLanguage', 'english')
+        language_instruction = self._get_language_instruction(response_language)
+
         # 提取JSON结构
         json_structure = api_definition.get('jsonStructure', '')
-        
-        prompt = f"""{self.base_system_prompt}
 
-{user_rules}
+        prompt = f"""{self.json_base_prompt}{handwriting_rules}{language_instruction}
 
 **輸出格式：絕對嚴格**
 - 你的回覆**必須是、也只能是**一個完整的 JSON 格式。
 - **禁止**包含任何 `json` 程式碼區塊標籤、開頭的問候語、結尾的解釋或其他任何非 JSON 內容。
 - 避免返回markdown的语法标记，特别是"```json"这样的标记
 - 仅返回JSON数据，不需要任务其他说明性内容，特别是markdown的语法标记
-- 对于打钩类回复，比如：團體險 (已勾選)， 返回 團體險 作为value
-- 对于有编号的回复，比如 "5 豁免保費"，是返回内容： "豁免保費", 不需要返回编号
-- 使用繁体中文回复
-- 返回日期格式为 **yyyy-MM-dd**"""
+
+{user_rules}
+"""
 
         # 如果有自定义JSON结构，添加到PROMPT中
         if json_structure:
@@ -79,30 +197,42 @@ class OCRPromptGenerator:
 
     def generate_markdown_prompt(self, api_definition: Dict[str, Any]) -> str:
         """生成Markdown格式的PROMPT"""
-        
+
+        # 使用Markdown专用的基础提示词
+        base_prompt = self.markdown_base_prompt
+
+        # 检查是否启用手写体识别
+        include_handwriting = api_definition.get('includeHandwriting', False)
+        if include_handwriting:
+            base_prompt += self.handwriting_enhancement
+
+        # 获取语言指令
+        response_language = api_definition.get('responseLanguage', 'english')
+        language_instruction = self._get_language_instruction(response_language)
+
         # 提取用户规则
         rules = api_definition.get('rules', [])
         user_rules = self._format_user_rules(rules)
-        
-        prompt = f"""{self.base_system_prompt}
+
+        prompt = f"""{base_prompt}{language_instruction}
+**输出格式要求：**
+- 你的回复必须是、也只能是完整的Markdown格式文本
+- 严格遵循Markdown语法规范
+- 保持原文档的结构层次和视觉布局
+- 使用适当的Markdown元素（标题、表格、列表等）
+- 不要添加额外的解释或说明文字
+
+**特殊格式处理：**
+- **表格**：使用标准Markdown表格语法
+- **标题**：根据层级使用 #、##、### 等
+- **列表**：使用 - 或 1. 表示列表项
+- **强调**：重要内容使用 **粗体** 标记
+- **日期**：保持原格式或转换为 yyyy-MM-dd
+
+{self._get_markdown_table_example(response_language)}
 
 {user_rules}
-
-**輸出格式：絕對嚴格**
-- 你的回覆**必須是、也只能是**一個完整的Markdown的文本。
-- 图片识别的文本内容，通过markdown的语法返回
-- 如果识别出来的是文本，你需要严格遵行文本的格式。
-- 如果识别出来的是表格，你需要严格遵行原表格的格式。
-- 如果识别出来的表格内容，直接返回markdown格式的表格,格式参考{{Markdown表格参考}}
-- 严格遵循Markdown语法，确保格式正确。
-- 使用繁体中文回复
-
-## Markdown表格参考
-| 欄位名稱 | 內容 |
-| -------- | ------- |
-| 姓名 | 張三 |
-| 日期 | 2024-01-01 |
-| 金額 | $1,000 |"""
+"""
 
         return prompt
 
@@ -110,13 +240,12 @@ class OCRPromptGenerator:
         """格式化用户自定义规则"""
         if not rules:
             return ""
-        
+
         formatted_rules = []
         for i, rule in enumerate(rules, 1):
             formatted_rules.append(f"{i}. {rule}")
-        
-        return f"""
-**用戶自定義規則：**
+
+        return f"""**用户自定义规则：**
 {chr(10).join(formatted_rules)}"""
 
     def generate_prompt(self, api_definition: Dict[str, Any]) -> str:

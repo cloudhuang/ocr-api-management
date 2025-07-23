@@ -21,6 +21,8 @@ interface ApiDetails {
     rules: string[];
     responseFormat: string;
     jsonStructure: string | null;
+    includeHandwriting?: boolean;
+    responseLanguage?: string;
   };
   created_at: string;
 }
@@ -206,6 +208,37 @@ export default function ApiDetailsPage() {
                 ) : (
                   <p className="text-gray-400">No rules defined</p>
                 )}
+              </div>
+            </div>
+
+            {/* Handwriting Recognition & Response Language */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">手写体识别</h3>
+                <Badge
+                  variant="outline"
+                  className={`px-3 py-1 shadow-sm ${
+                    api.definition.includeHandwriting
+                      ? "border border-green-200 text-green-700 bg-green-50"
+                      : "border border-gray-200 text-gray-700 bg-gray-50"
+                  }`}
+                >
+                  {api.definition.includeHandwriting ? "已启用" : "未启用"}
+                </Badge>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">返回语言</h3>
+                <Badge variant="outline" className="px-3 py-1 border border-purple-200 text-purple-700 bg-purple-50 shadow-sm">
+                  {(() => {
+                    switch (api.definition.responseLanguage) {
+                      case "simplified_chinese": return "简体中文";
+                      case "traditional_chinese": return "繁体中文";
+                      case "japanese": return "日本語";
+                      case "english":
+                      default: return "English";
+                    }
+                  })()}
+                </Badge>
               </div>
             </div>
 

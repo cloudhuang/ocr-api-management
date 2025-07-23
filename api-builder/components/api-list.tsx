@@ -18,6 +18,8 @@ interface ApiItem {
   project: string
   tags: string[]
   responseFormat: "markdown" | "json"
+  includeHandwriting: boolean
+  responseLanguage: string
   createdAt: string
   status: "active" | "inactive" | "draft"
 }
@@ -55,6 +57,8 @@ export default function ApiList() {
           project: definition.project || "",
           tags: definition.tags || [],
           responseFormat: definition.responseFormat || "json",
+          includeHandwriting: definition.includeHandwriting || false,
+          responseLanguage: definition.responseLanguage || "english",
           createdAt: api.created_at ? new Date(api.created_at).toLocaleDateString() : "Unknown",
           status: "active" // 默认状态，后端可能没有这个字段
         }
@@ -206,6 +210,8 @@ export default function ApiList() {
                     <TableHead>Project</TableHead>
                     <TableHead>Tags</TableHead>
                     <TableHead>Format</TableHead>
+                    <TableHead>手写体</TableHead>
+                    <TableHead>语言</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead className="w-[50px]">Actions</TableHead>
@@ -239,6 +245,31 @@ export default function ApiList() {
                       <TableCell>
                         <Badge variant="outline" className="capitalize">
                           {api.responseFormat}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${
+                            api.includeHandwriting
+                              ? "border-green-200 text-green-700 bg-green-50"
+                              : "border-gray-200 text-gray-600 bg-gray-50"
+                          }`}
+                        >
+                          {api.includeHandwriting ? "启用" : "未启用"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs border-purple-200 text-purple-700 bg-purple-50">
+                          {(() => {
+                            switch (api.responseLanguage) {
+                              case "simplified_chinese": return "简中";
+                              case "traditional_chinese": return "繁中";
+                              case "japanese": return "日文";
+                              case "english":
+                              default: return "英文";
+                            }
+                          })()}
                         </Badge>
                       </TableCell>
                       <TableCell>

@@ -83,7 +83,9 @@ export async function PUT(
         tags: body.tags || [],
         rules: body.rules || [],
         responseFormat: body.responseFormat,
-        jsonStructure: body.jsonStructure
+        jsonStructure: body.jsonStructure,
+        includeHandwriting: body.includeHandwriting || false,
+        responseLanguage: body.responseLanguage || "english"
       }
     };
     

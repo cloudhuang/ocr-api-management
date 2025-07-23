@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -31,6 +33,8 @@ export default function ApiBuilder() {
   const [project, setProject] = useState("");
   const [responseFormat, setResponseFormat] = useState("markdown");
   const [jsonStructure, setJsonStructure] = useState("");
+  const [includeHandwriting, setIncludeHandwriting] = useState(false);
+  const [responseLanguage, setResponseLanguage] = useState("english");
   const [newRule, setNewRule] = useState("");
   const [newTag, setNewTag] = useState("");
 
@@ -103,6 +107,8 @@ export default function ApiBuilder() {
       rules: rules.map((rule) => rule.text),
       responseFormat,
       jsonStructure: responseFormat === "json" ? jsonStructure : null,
+      includeHandwriting,
+      responseLanguage,
     };
 
     try {
@@ -235,6 +241,39 @@ export default function ApiBuilder() {
             </div>
           </div>
 
+          {/* Include Handwriting Recognition */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">手写体识别</Label>
+                <p className="text-xs text-gray-500">
+                  启用后将专门优化手写文字的识别能力
+                </p>
+              </div>
+              <Switch
+                checked={includeHandwriting}
+                onCheckedChange={setIncludeHandwriting}
+                id="include-handwriting"
+              />
+            </div>
+          </div>
+
+          {/* Response Language */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">返回语言</Label>
+            <Select value={responseLanguage} onValueChange={setResponseLanguage}>
+              <SelectTrigger>
+                <SelectValue placeholder="选择返回语言" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="english">English (英文)</SelectItem>
+                <SelectItem value="simplified_chinese">简体中文</SelectItem>
+                <SelectItem value="traditional_chinese">繁体中文</SelectItem>
+                <SelectItem value="japanese">日本語 (日文)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Rules */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -299,6 +338,8 @@ export default function ApiBuilder() {
               </div>
             </RadioGroup>
           </div>
+
+
 
           {/* JSON Structure */}
           {responseFormat === "json" && (
