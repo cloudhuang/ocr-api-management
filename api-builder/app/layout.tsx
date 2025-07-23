@@ -3,8 +3,8 @@ import './globals.css'
 import Navigation from '@/components/navigation'
 
 export const metadata: Metadata = {
-  title: 'EIS OCE API Management',
-  description: 'The EIS OCE API Management'
+  title: 'EIS OCR API Management',
+  description: 'The EIS OCR API Management'
 }
 
 export default function RootLayout({

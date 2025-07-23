@@ -127,102 +127,110 @@ export default function ApiDetailsPage() {
     );
   }
 
+
   return (
-    <div className="min-h-screen bg-gray-50">
- 
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <Button variant="outline" onClick={() => router.push("/")} className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to API List
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleEdit} className="flex items-center gap-2">
-              <Edit className="h-4 w-4" />
-              Edit
-            </Button>
-            <Button variant="outline" onClick={handleDelete} className="flex items-center gap-2 text-red-600 hover:text-red-700">
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="max-w-3xl mx-auto py-10 px-4">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between bg-white rounded-xl shadow-sm px-6 py-5 border border-gray-200">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => router.push("/")} className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 transition">
+                <ArrowLeft className="h-5 w-5" />
+                <span className="font-medium">Back</span>
+              </Button>
+              <span className="text-xs text-gray-400">|</span>
+              <span className="text-lg font-semibold text-gray-800">API Details</span>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleEdit} className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 transition">
+                <Edit className="h-4 w-4" />
+                Edit
+              </Button>
+              <Button variant="outline" onClick={handleDelete} className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 transition">
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            </div>
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">API Code</div>
-                <CardTitle className="text-2xl font-bold">{api.definition.apiCode}</CardTitle>
+        {/* Main Card Section */}
+        <Card className="rounded-2xl shadow-md border border-gray-200">
+          <CardHeader className="bg-blue-50 rounded-t-2xl px-6 py-5 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-blue-700 font-semibold tracking-wide">API Code</div>
+                <CardTitle className="text-3xl font-extrabold text-blue-900 leading-tight">{api.definition.apiCode}</CardTitle>
+                <div className="mt-1 text-sm text-gray-500">{api.definition.apiName || api.name}</div>
+                <div className="mt-2">
+                  <span className="text-xs font-medium text-indigo-800 bg-indigo-400 p-2 rounded-md">Project: {api.definition.project || "Not specified"}</span>
+                </div>
               </div>
-              <Badge className="bg-green-100 text-green-800">Active</Badge>
+              <Badge className="bg-green-100 text-green-800 px-3 py-1 rounded-full shadow-sm">Active</Badge>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium mb-2">API Name</h3>
-              <p>{api.definition.apiName || api.name}</p>
+          <CardContent className="px-6 py-8 space-y-8">
+            {/* Description */}
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Description</h3>
+                <p className="text-gray-800 text-sm leading-relaxed">{api.description || api.definition.description || "No description provided."}</p>
+              </div>
             </div>
 
-
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Description</h3>
-              <p className="text-gray-700">{api.description || api.definition.description || "No description provided."}</p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Project</h3>
-              <p>{api.definition.project || "Not specified"}</p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {api.definition.tags && api.definition.tags.length > 0 ? (
-                  api.definition.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className={getTagColor()}>
-                      {tag}
-                    </Badge>
-                  ))
+            {/* Tags & Rules */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {api.definition.tags && api.definition.tags.length > 0 ? (
+                    api.definition.tags.map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full shadow-sm hover:bg-blue-200 transition">
+                        {tag}
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-gray-400">No tags</p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Rules</h3>
+                {api.definition.rules && api.definition.rules.length > 0 ? (
+                  <ul className="list-disc pl-5 space-y-1 text-gray-800 text-sm">
+                    {api.definition.rules.map((rule, index) => (
+                      <li key={index}>{rule}</li>
+                    ))}
+                  </ul>
                 ) : (
-                  <p className="text-gray-500">No tags</p>
+                  <p className="text-gray-400">No rules defined</p>
                 )}
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-2">Rules</h3>
-              {api.definition.rules && api.definition.rules.length > 0 ? (
-                <ul className="list-disc pl-5 space-y-1">
-                  {api.definition.rules.map((rule, index) => (
-                    <li key={index}>{rule}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-500">No rules defined</p>
+            {/* Response Format & JSON Structure */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Response Format</h3>
+                <Badge variant="outline" className="capitalize px-3 py-1 border border-blue-200 text-blue-700 bg-blue-50 shadow-sm">
+                  {api.definition.responseFormat || "Not specified"}
+                </Badge>
+              </div>
+              {api.definition.responseFormat === "json" && api.definition.jsonStructure && (
+                <div>
+                  <h3 className="text-base font-semibold mb-2 text-gray-700">JSON Structure</h3>
+                  <pre className="bg-gray-100 p-3 rounded-lg overflow-auto max-h-60 text-xs border border-gray-200 shadow-inner">
+                    {api.definition.jsonStructure}
+                  </pre>
+                </div>
               )}
             </div>
 
-            <div>
-              <h3 className="text-lg font-medium mb-2">Response Format</h3>
-              <Badge variant="outline" className="capitalize">
-                {api.definition.responseFormat || "Not specified"}
-              </Badge>
-            </div>
-
-            {api.definition.responseFormat === "json" && api.definition.jsonStructure && (
-              <div>
-                <h3 className="text-lg font-medium mb-2">JSON Structure</h3>
-                <pre className="bg-gray-100 p-3 rounded overflow-auto max-h-80 text-sm">
-                  {api.definition.jsonStructure}
-                </pre>
-              </div>
-            )}
-
-            <div>
-              <h3 className="text-lg font-medium mb-2">Created At</h3>
-              <p className="text-gray-700">
+            {/* Created At */}
+            <div className="pt-4 border-t border-gray-100">
+              <h3 className="text-base font-semibold mb-2 text-gray-700">Created At</h3>
+              <p className="text-gray-700 text-sm">
                 {api.created_at ? new Date(api.created_at).toLocaleString() : "Unknown"}
               </p>
             </div>
