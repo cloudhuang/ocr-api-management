@@ -125,9 +125,9 @@ class OCRPromptGenerator:
 
         prompt = f"""{self.json_base_prompt}{handwriting_rules}{language_instruction}
 
-**輸出格式：絕對嚴格**
+**输出格式：绝对严格**
 - 你的回覆**必須是、也只能是**一個完整的 JSON 格式。
-- **禁止**包含任何 `json` 程式碼區塊標籤、開頭的問候語、結尾的解釋或其他任何非 JSON 內容。
+- **禁止**包含任何 `json` 代码区块标签、开头的问候语、结尾的解释或其他任何非 JSON 内容。
 - 避免返回markdown的语法标记，特别是"```json"这样的标记
 - 仅返回JSON数据，不需要任务其他说明性内容，特别是markdown的语法标记
 
@@ -138,8 +138,8 @@ class OCRPromptGenerator:
         if json_structure:
             prompt += f"""
 
-**JSON 結構要求：**
-請按照以下JSON結構返回結果：
+**JSON 结构要求：**
+请按照以下JSON结构返回结果：
 ```
 {json_structure}
 ```"""
@@ -147,8 +147,8 @@ class OCRPromptGenerator:
             # 使用默认的简单JSON结构
             prompt += """
 
-**JSON 結構要求：**
-請按照以下JSON結構返回結果,
+**JSON 结构要求：**
+请按照以下JSON结构返回结果,
 - 如果存在表格内容，请将其转换为JSON数组的形式
 ```json
 {
