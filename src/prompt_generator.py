@@ -14,28 +14,28 @@ class OCRPromptGenerator:
         self.language_configs = {
             "english": {
                 "name": "English",
-                "instruction": "You must respond in English only. If the original text is in Chinese, Japanese, or other languages, translate ALL content to English while preserving the document structure.",
+                "instruction": "You must respond in English only. If the original text is in Chinese, Japanese, or other languages, translate ALL content to English after preserving the document structure and return the translated content.",
                 "date_format": "yyyy-MM-dd",
                 "currency_note": "Keep original currency symbols",
                 "translation_note": "Translate ALL field names and content to English. Do not leave any Chinese or Japanese text untranslated."
             },
             "simplified_chinese": {
                 "name": "简体中文",
-                "instruction": "必须使用简体中文回复。如果原文是英文、日文或其他语言，请将所有内容翻译为简体中文，同时保持文档结构。",
+                "instruction": "必须使用简体中文回复。如果原文是英文、日文或其他语言，请将所有识别出来的内容翻译为简体中文，并用中文回复，同时保持文档结构。",
                 "date_format": "yyyy年MM月dd日 或 yyyy-MM-dd",
                 "currency_note": "保持原有货币符号",
                 "translation_note": "将所有字段名称和内容翻译为简体中文。不要保留英文或日文原文。"
             },
             "traditional_chinese": {
                 "name": "繁體中文",
-                "instruction": "必須使用繁體中文回覆。如果原文是英文、日文或其他語言，請將所有內容翻譯為繁體中文，同時保持文檔結構。",
+                "instruction": "必須使用繁體中文回覆。如果原文是英文、日文或其他語言，請將所有識別出來的內容翻譯為繁體中文，並用繁體中文回復，同時保持文檔結構。",
                 "date_format": "yyyy年MM月dd日 或 yyyy-MM-dd",
                 "currency_note": "保持原有貨幣符號",
                 "translation_note": "將所有欄位名稱和內容翻譯為繁體中文。不要保留英文或日文原文。"
             },
             "japanese": {
                 "name": "日本語",
-                "instruction": "必ず日本語で回答してください。元のテキストが英語や中国語などの他の言語の場合は、すべての内容を日本語に翻訳してください。文書構造は保持してください。",
+                "instruction": "必ず日本語で回答してください。元のテキストが英語や中国語などの他の言語である場合は、すべて認識できる内容を日本語に翻訳し、日本語で返信してください。文書の構造はそのまま保持してください。",
                 "date_format": "yyyy年MM月dd日 または yyyy-MM-dd",
                 "currency_note": "元の通貨記号を保持",
                 "translation_note": "すべてのフィールド名、内容、テキストを日本語に翻訳してください。英語や中国語をそのまま残さないでください。"
@@ -105,36 +105,6 @@ class OCRPromptGenerator:
 - 日期格式：{config["date_format"]}
 - 货币处理：{config["currency_note"]}"""
 
-    def _get_markdown_table_example(self, language: str) -> str:
-        """根据语言获取Markdown表格示例"""
-        examples = {
-            "english": """**Markdown Table Example:**
-| Field Name | Content |
-| ---------- | ------- |
-| Name | John Doe |
-| Date | 2024-01-01 |
-| Amount | $1,000 |""",
-            "simplified_chinese": """**Markdown表格示例：**
-| 字段名称 | 内容 |
-| -------- | ---- |
-| 姓名 | 张三 |
-| 日期 | 2024-01-01 |
-| 金额 | ¥1,000 |""",
-            "traditional_chinese": """**Markdown表格示例：**
-| 欄位名稱 | 內容 |
-| -------- | ---- |
-| 姓名 | 張三 |
-| 日期 | 2024-01-01 |
-| 金額 | $1,000 |""",
-            "japanese": """**Markdownテーブル例：**
-| フィールド名 | 内容 |
-| ------------ | ---- |
-| 名前 | 田中太郎 |
-| 日付 | 2024-01-01 |
-| 金額 | ¥1,000 |"""
-        }
-        return examples.get(language, examples["english"])
-
     def generate_json_prompt(self, api_definition: Dict[str, Any]) -> str:
         """生成JSON格式的PROMPT"""
 
@@ -178,7 +148,8 @@ class OCRPromptGenerator:
             prompt += """
 
 **JSON 結構要求：**
-請按照以下JSON結構返回結果：
+請按照以下JSON結構返回結果,
+- 如果存在表格内容，请将其转换为JSON数组的形式
 ```json
 {
   "text": "识别到的文本内容",
@@ -186,8 +157,27 @@ class OCRPromptGenerator:
   "fields": [
     {
       "name": "字段名称",
+      "type": "field"
       "value": "字段值",
       "confidence": "该字段的置信度"
+    },
+    {
+        "name": "表格名称",
+        "type": "table",
+        "rows": [
+            {
+                "cells": [
+                    {"name": "列1名称", "value": "列1值", "confidence": "列1置信度"},
+                    {"name": "列2名称", "value": "列2值", "confidence": "列2置信度"}
+                ]
+            },
+            {
+                "cells": [
+                    {"name": "列1名称", "value": "列1值", "confidence": "列1置信度"},
+                    {"name": "列2名称", "value": "列2值", "confidence": "列2置信度"}
+                ]
+            }
+        ]
     }
   ]
 }
@@ -229,8 +219,6 @@ class OCRPromptGenerator:
 - **强调**：重要内容使用 **粗体** 标记
 - **日期**：保持原格式或转换为 yyyy-MM-dd
 
-{self._get_markdown_table_example(response_language)}
-
 {user_rules}
 """
 
@@ -251,7 +239,7 @@ class OCRPromptGenerator:
     def generate_prompt(self, api_definition: Dict[str, Any]) -> str:
         """根据API定义生成相应格式的PROMPT"""
         response_format = api_definition.get('responseFormat', 'json').lower()
-        
+
         if response_format == 'markdown':
             return self.generate_markdown_prompt(api_definition)
         elif response_format == 'json':
@@ -286,13 +274,12 @@ if __name__ == "__main__":
             "返回日期格式为 yyyy-MM-dd",
             "金额字段必须包含货币符号",
             "电话号码格式为 xxx-xxxx-xxxx"
-        ],
-        "jsonStructure": '{"name": "string", "date": "string", "amount": "string", "phone": "string"}'
+        ]
     }
-    
+
     # 测试Markdown格式
     test_api_markdown = {
-        "apiCode": "TEST_MD_001", 
+        "apiCode": "TEST_MD_001",
         "apiName": "测试Markdown API",
         "responseFormat": "markdown",
         "rules": [
@@ -301,12 +288,12 @@ if __name__ == "__main__":
             "日期格式统一为 yyyy年MM月dd日"
         ]
     }
-    
+
     generator = OCRPromptGenerator()
-    
+
     print("=== JSON格式PROMPT ===")
     print(generator.generate_prompt(test_api_json))
-    print("\n" + "="*50 + "\n")
-    
+    print("\n" + "=" * 50 + "\n")
+
     print("=== Markdown格式PROMPT ===")
     print(generator.generate_prompt(test_api_markdown))
