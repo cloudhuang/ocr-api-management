@@ -214,7 +214,7 @@ export default function ApiDetailsPage() {
             {/* Handwriting Recognition & Response Language */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-base font-semibold mb-2 text-gray-700">手写体识别</h3>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Handwriting recognition</h3>
                 <Badge
                   variant="outline"
                   className={`px-3 py-1 shadow-sm ${
@@ -223,17 +223,17 @@ export default function ApiDetailsPage() {
                       : "border border-gray-200 text-gray-700 bg-gray-50"
                   }`}
                 >
-                  {api.definition.includeHandwriting ? "已启用" : "未启用"}
+                  {api.definition.includeHandwriting ? "Enabled" : "Not enabled"}
                 </Badge>
               </div>
               <div>
-                <h3 className="text-base font-semibold mb-2 text-gray-700">返回语言</h3>
+                <h3 className="text-base font-semibold mb-2 text-gray-700">Response language</h3>
                 <Badge variant="outline" className="px-3 py-1 border border-purple-200 text-purple-700 bg-purple-50 shadow-sm">
                   {(() => {
                     switch (api.definition.responseLanguage) {
-                      case "simplified_chinese": return "简体中文";
-                      case "traditional_chinese": return "繁体中文";
-                      case "japanese": return "日本語";
+                      case "simplified_chinese": return "Simplified Chinese";
+                      case "traditional_chinese": return "Traditional Chinese";
+                      case "japanese": return "Japanese";
                       case "english":
                       default: return "English";
                     }

@@ -91,7 +91,7 @@ export default function ApiBuilder() {
 
   const handleSave = async () => {
     if (!apiName.trim()) {
-      setMessage("请输入 API 名称");
+      setMessage("Please enter API name");
       return;
     }
 
@@ -122,27 +122,27 @@ export default function ApiBuilder() {
 
       if (response.ok) {
         const result = await response.json();
-        setMessage("API 定义保存成功！");
+        setMessage("API definition saved successfully!");
         console.log("保存成功:", result);
         
-        // 显示成功消息后短暂延迟，然后跳转到 API List 页面
+        // Brief delay after showing success message, then redirect to API List page
         setTimeout(() => {
           router.push("/");
-        }, 1500); // 1.5秒后跳转，让用户有时间看到成功消息
+        }, 1500); // Redirect after 1.5 seconds to give users time to see the success message
       } else {
         const errorData = await response.json();
         setMessage(errorData.error || "保存失败");
       }
     } catch (error) {
       console.error("保存错误:", error);
-      setMessage("网络错误，请稍后重试");
+      setMessage("Network error, please try again later");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    // 直接跳转到 API List 页面
+    // Directly redirect to API List page
     router.push("/");
   };
 
@@ -245,9 +245,9 @@ export default function ApiBuilder() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-sm font-medium">手写体识别</Label>
+                <Label className="text-sm font-medium">Handwriting recognition</Label>
                 <p className="text-xs text-gray-500">
-                  启用后将专门优化手写文字的识别能力
+                  When enabled, it will specifically optimize the recognition of handwritten text
                 </p>
               </div>
               <Switch
@@ -260,16 +260,16 @@ export default function ApiBuilder() {
 
           {/* Response Language */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">返回语言</Label>
+            <Label className="text-sm font-medium">Response language</Label>
             <Select value={responseLanguage} onValueChange={setResponseLanguage}>
               <SelectTrigger>
-                <SelectValue placeholder="选择返回语言" />
+                <SelectValue placeholder="Select response language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="english">English (英文)</SelectItem>
-                <SelectItem value="simplified_chinese">简体中文</SelectItem>
-                <SelectItem value="traditional_chinese">繁体中文</SelectItem>
-                <SelectItem value="japanese">日本語 (日文)</SelectItem>
+                <SelectItem value="english">English</SelectItem>
+                <SelectItem value="simplified_chinese">Simplified Chinese</SelectItem>
+                <SelectItem value="traditional_chinese">Traditional Chinese</SelectItem>
+                <SelectItem value="japanese">Japanese</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -381,7 +381,7 @@ export default function ApiBuilder() {
             </Button>
             <Button onClick={handleSave} disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "保存中..." : "save"}
+              {loading ? "Saving..." : "save"}
             </Button>
           </div>
         </CardContent>

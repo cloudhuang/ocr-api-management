@@ -29,12 +29,12 @@ export default function OcrTestPage() {
     e.preventDefault();
     
     if (!apiCode.trim()) {
-      setMessage("请输入 API CODE");
+      setMessage("Please enter API CODE");
       return;
     }
     
     if (!selectedFile) {
-      setMessage("请选择图片文件");
+      setMessage("Please select an image file");
       return;
     }
     
@@ -56,13 +56,13 @@ export default function OcrTestPage() {
       
       if (response.ok) {
         setResult(data);
-        setMessage("OCR 处理成功");
+        setMessage("OCR processing successful");
       } else {
-        setMessage(data.error || "OCR 处理失败");
+        setMessage(data.error || "OCR processing failed");
       }
     } catch (error) {
       console.error("OCR 处理错误:", error);
-      setMessage("网络错误，请稍后重试");
+      setMessage("Network error, please try again later");
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export default function OcrTestPage() {
       <div className="max-w-4xl mx-auto p-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">OCR 测试</CardTitle>
+            <CardTitle className="text-2xl font-bold">OCR Test</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,13 +84,13 @@ export default function OcrTestPage() {
                   id="api-code"
                   value={apiCode}
                   onChange={(e) => setApiCode(e.target.value)}
-                  placeholder="输入 API CODE"
+                  placeholder="Enter API CODE"
                   required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="image">图片文件</Label>
+                <Label htmlFor="image">Image file</Label>
                 <div className="flex items-center gap-2">
                   <Input
                     id="image"
@@ -107,17 +107,17 @@ export default function OcrTestPage() {
                     className="flex items-center gap-2"
                   >
                     <Upload className="h-4 w-4" />
-                    选择图片
+                    Select image
                   </Button>
                   <span className="text-sm text-gray-500">
-                    {selectedFile ? selectedFile.name : "未选择文件"}
+                    {selectedFile ? selectedFile.name : "No file selected"}
                   </span>
                 </div>
               </div>
               
               <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? "处理中..." : "开始 OCR 处理"}
+                {loading ? "Processing..." : "Start OCR processing"}
               </Button>
             </form>
             
@@ -131,7 +131,7 @@ export default function OcrTestPage() {
             
             {result && (
               <div className="mt-6 space-y-4">
-                <h3 className="text-lg font-medium">处理结果</h3>
+                <h3 className="text-lg font-medium">Processing result</h3>
                 <div className="bg-gray-100 p-4 rounded-md">
                   <pre className="whitespace-pre-wrap text-sm">
                     {JSON.stringify(result, null, 2)}

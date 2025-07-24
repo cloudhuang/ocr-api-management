@@ -30,7 +30,7 @@ export default function ApiList() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   
-  // 从后端 API 获取数据
+  // Fetch data from backend API
   const fetchApis = async () => {
     try {
       setLoading(true)
@@ -44,7 +44,7 @@ export default function ApiList() {
       
       const data = await response.json()
       
-      // 转换后端数据格式为前端组件需要的格式
+      // Convert backend data format to the format required by frontend components
       const formattedApis = data.map((api: any) => {
         // 从 definition 中提取数据
         const definition = api.definition || {}
@@ -104,7 +104,7 @@ export default function ApiList() {
           throw new Error("Failed to delete API")
         }
         
-        // 从本地状态中移除已删除的 API
+        // Remove the deleted API from local state
         setApis(apis.filter((api) => api.id !== id))
         console.log("API deleted successfully:", id)
       } catch (err) {
@@ -210,8 +210,8 @@ export default function ApiList() {
                     <TableHead>Project</TableHead>
                     <TableHead>Tags</TableHead>
                     <TableHead>Format</TableHead>
-                    <TableHead>手写体</TableHead>
-                    <TableHead>语言</TableHead>
+                    <TableHead>Handwriting</TableHead>
+                    <TableHead>Language</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead className="w-[50px]">Actions</TableHead>
@@ -256,18 +256,18 @@ export default function ApiList() {
                               : "border-gray-200 text-gray-600 bg-gray-50"
                           }`}
                         >
-                          {api.includeHandwriting ? "启用" : "未启用"}
+                          {api.includeHandwriting ? "Enabled" : "Not enabled"}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs border-purple-200 text-purple-700 bg-purple-50">
                           {(() => {
                             switch (api.responseLanguage) {
-                              case "simplified_chinese": return "简中";
-                              case "traditional_chinese": return "繁中";
-                              case "japanese": return "日文";
+                              case "simplified_chinese": return "Simplified Chinese";
+                              case "traditional_chinese": return "Traditional Chinese";
+                              case "japanese": return "Japanese";
                               case "english":
-                              default: return "英文";
+                              default: return "English";
                             }
                           })()}
                         </Badge>

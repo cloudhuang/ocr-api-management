@@ -50,7 +50,7 @@ interface ApiBuilderEditProps {
 export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) {
   const router = useRouter()
 
-  // 从 apiData 中提取数据
+  // Extract data from apiData
   const [apiCode, setApiCode] = useState(apiData.definition.apiCode || "")
   const [apiName, setApiName] = useState(apiData.definition.apiName || apiData.name || "")
   const [description, setDescription] = useState(apiData.definition.description || apiData.description || "")
@@ -62,7 +62,7 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
   const [newRule, setNewRule] = useState("")
   const [newTag, setNewTag] = useState("")
 
-  // 将 API 数据中的 rules 转换为组件需要的格式
+  // Convert rules from API data to the format required by the component
   const [rules, setRules] = useState<Rule[]>(
     (apiData.definition.rules || []).map((rule, index) => ({
       id: `rule-${index}`,
@@ -70,7 +70,7 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
     }))
   )
 
-  // 将 API 数据中的 tags 转换为组件需要的格式
+  // Convert tags from API data to the format required by the component
   const [tags, setTags] = useState<Tag[]>(
     (apiData.definition.tags || []).map((tag, index) => ({
       id: `tag-${index}`,
@@ -126,7 +126,7 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
 
   const handleSave = async () => {
     if (!apiName.trim()) {
-      setMessage("请输入 API 名称")
+      setMessage("Please enter API name")
       return
     }
 
@@ -157,27 +157,27 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
 
       if (response.ok) {
         const result = await response.json()
-        setMessage("API 定义更新成功！")
+        setMessage("API definition updated successfully!")
         console.log("更新成功:", result)
         
-        // 显示成功消息后短暂延迟，然后跳转到 API 详情页面
+        // Brief delay after showing success message, then redirect to API details page
         setTimeout(() => {
           router.push(`/apis/${apiId}`)
-        }, 1500) // 1.5秒后跳转，让用户有时间看到成功消息
+        }, 1500) // Redirect after 1.5 seconds to give users time to see the success message
       } else {
         const errorData = await response.json()
-        setMessage(errorData.error || "更新失败")
+        setMessage(errorData.error || "Update failed")
       }
     } catch (error) {
       console.error("更新错误:", error)
-      setMessage("网络错误，请稍后重试")
+      setMessage("Network error, please try again later")
     } finally {
       setLoading(false)
     }
   }
 
   const handleCancel = () => {
-    // 返回到 API 详情页面
+    // Return to API details page
     router.push(`/apis/${apiId}`)
   }
 
@@ -266,9 +266,9 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label className="text-sm font-medium">手写体识别</Label>
+                <Label className="text-sm font-medium">Handwriting recognition</Label>
                 <p className="text-xs text-gray-500">
-                  启用后将专门优化手写文字的识别能力
+                  When enabled, it will specifically optimize the recognition of handwritten text
                 </p>
               </div>
               <Switch
@@ -281,16 +281,16 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
 
           {/* Response Language */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">返回语言</Label>
+            <Label className="text-sm font-medium">Response language</Label>
             <Select value={responseLanguage} onValueChange={setResponseLanguage}>
               <SelectTrigger>
-                <SelectValue placeholder="选择返回语言" />
+                <SelectValue placeholder="Select response language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="english">English (英文)</SelectItem>
-                <SelectItem value="simplified_chinese">简体中文</SelectItem>
-                <SelectItem value="traditional_chinese">繁体中文</SelectItem>
-                <SelectItem value="japanese">日本語 (日文)</SelectItem>
+                <SelectItem value="english">English</SelectItem>
+                <SelectItem value="simplified_chinese">Simplified Chinese</SelectItem>
+                <SelectItem value="traditional_chinese">Traditional Chinese</SelectItem>
+                <SelectItem value="japanese">Japanese</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -386,7 +386,7 @@ export default function ApiBuilderEdit({ apiData, apiId }: ApiBuilderEditProps) 
             </Button>
             <Button onClick={handleSave} disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "保存中..." : "Save Changes"}
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </CardContent>
